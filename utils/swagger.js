@@ -5,9 +5,9 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Your API',
+      title: 'ITGG - CORE',
       version: '1.0.0',
-      description: 'API documentation for your Express.js application',
+      description: 'API DOCUMENT FOR ITGG WEBSITE',
     },
   },
   apis: ['./routes/api/*.js'], // Path to the API routes folder

@@ -1,6 +1,6 @@
-const { default: mongoose } = require('mongoose');
 var router = require('express').Router();
 const GATEMODEL = require('../../Models/gate.model')
+const LOGSMODEL = require('../../Models/logs.model')
 
 /**
  * @swagger
@@ -82,6 +82,12 @@ router.post('/', (req, res) => {
     mascotURL: body.mascotURL,
     logoURL: body.logoURL
   }).save()
+  new LOGSMODEL({
+    action: "CREATE GATE INFO",
+    payload: req.body,
+    method: "POST",
+    type: "GATE"
+  }).save()
   if (creator) {
     res.status(200).json({
       message: "Successfully Create Gate!"
@@ -122,6 +128,12 @@ router.put('/', async (req, res) => {
   const checker = await GATEMODEL.findOne({ _id: body._id }).catch(() => { return res.status(404).json({ message: "Value Not Found" }) })
   if (checker) {
     const updater = await GATEMODEL.findOneAndUpdate({ _id: body._id }, { gate_name: body.gate_name, token_amount: body.token_amount })
+    new LOGSMODEL({
+      action: "UPDATE GATE INFO",
+      payload: req.body,
+      method: "PUT",
+      type: "GATE"
+    }).save()
     if (updater) {
       res.status(200).json({
         message: "Successfully Update Gate!"
@@ -161,6 +173,12 @@ router.put('/increment', async (req, res) => {
   const checker = await GATEMODEL.findOne({ _id: body._id }).catch(() => { return res.status(404).json({ message: "Value Not Found" }) })
   if (checker) {
     const updater = await GATEMODEL.findOneAndUpdate({ _id: body._id }, { $inc: { token_amount: Number(body.amount) } })
+    new LOGSMODEL({
+      action: "INCREMENT GATE TOKEN",
+      payload: req.body,
+      method: "PUT",
+      type: "GATE"
+    }).save()
     if (updater) {
       res.status(200).json({
         message: `Increment Token Value For ${checker.gate_name}`
@@ -191,6 +209,12 @@ router.delete('/:_id', async (req, res) => {
   const checker = await GATEMODEL.findOne({ _id: req.params._id }).catch(() => { return res.status(404).json({ message: "Value Not Found" }) })
   if(checker) {
     const deleter = await GATEMODEL.deleteOne({ _id: req.params._id })
+    new LOGSMODEL({
+      action: "DELETE GATE INFO",
+      payload: req.params._id,
+      method: "DELETE",
+      type: "GATE"
+    }).save()
     if(deleter) {
       res.status(200).json({
         message: "Successfully Delete Gate"

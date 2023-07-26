@@ -1,4 +1,3 @@
-const { default: mongoose } = require('mongoose');
 const LIVEMODEL = require('../../Models/live.model');
 var router = require('express').Router();
 const GATEMODEL = require('../../Models/gate.model')

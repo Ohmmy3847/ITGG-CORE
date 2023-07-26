@@ -1,6 +1,7 @@
 const { default: mongoose } = require('mongoose');
 var router = require('express').Router();
 const LIVEMODEL = require('../../Models/live.model')
+const LOGSMODEL = require('../../Models/logs.model')
 
 /**
  * @swagger
@@ -71,6 +72,12 @@ router.post('/', (req, res) => {
     live_url: body.live_url,
     order: body.order,
   }).save()
+  new LOGSMODEL({
+    action: "CREATE LIVE INFO",
+    payload: req.body,
+    method: "POST",
+    type: "LIVE"
+  }).save()
   if (creator) {
     res.status(200).json({
       message: "Successfully Create Gate!"
@@ -111,6 +118,12 @@ router.put('/', async (req, res) => {
   const checker = await LIVEMODEL.findOne({ _id: body._id }).catch(() => { return res.status(404).json({ message: "Value Not Found" }) })
   if (checker) {
     const updater = await LIVEMODEL.findOneAndUpdate({ _id: body._id }, { gate_name: body.gate_name, token_amount: body.token_amount })
+    new LOGSMODEL({
+      action: "UPDATE LIVE INFO",
+      payload: req.body,
+      method: "PUT",
+      type: "LIVE"
+    }).save()
     if (updater) {
       res.status(200).json({
         message: "Successfully Update Gate!"
@@ -140,6 +153,12 @@ router.delete('/:_id', async (req, res) => {
   const checker = await LIVEMODEL.findOne({ _id: req.params._id }).catch(() => { return res.status(404).json({ message: "Value Not Found" }) })
   if(checker) {
     const deleter = await LIVEMODEL.deleteOne({ _id: req.params._id })
+    new LOGSMODEL({
+      action: "DELETE LIVE INFO",
+      payload: req.params._id,
+      method: "DELETE",
+      type: "LIVE"
+    }).save()
     if(deleter) {
       res.status(200).json({
         message: "Successfully Delete Gate"
